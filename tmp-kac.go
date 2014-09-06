@@ -62,6 +62,10 @@ func GetNextTargetRequired(params btcnet.Params, db btcdb.Db, last *btcutil.Bloc
 	if prevPrev == nil {
 		return InitialHashTargetBits // second block
 	}
+	//TODO dirty workaround, ppcoin doesn't point to genesis block
+	if prevPrev.Height() == 0 {
+		return InitialHashTargetBits
+	}
 	actualSpacing := prev.MsgBlock().Header.Timestamp.Unix() - prevPrev.MsgBlock().Header.Timestamp.Unix()
 	newTarget := btcchain.CompactToBig(prev.MsgBlock().Header.Bits)
 	var targetSpacing int64
