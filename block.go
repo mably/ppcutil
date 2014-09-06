@@ -11,3 +11,7 @@ import (
 func BlockUnixTime(block *btcutil.Block) int64 {
 	return block.MsgBlock().Header.Timestamp.Unix()
 }
+
+func IsBlockProofOfStake(block *btcutil.Block) bool {
+	return IsMsgBlockProofOfStake(block.MsgBlock())
+}
