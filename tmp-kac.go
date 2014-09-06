@@ -5,11 +5,11 @@
 package ppcutil
 
 import (
-	"github.com/conformal/btcchain"
-	"github.com/conformal/btcdb"
-	"github.com/conformal/btcnet"
-	"github.com/conformal/btcutil"
-	"github.com/conformal/btcwire"
+	"github.com/mably/btcchain"
+	"github.com/mably/btcdb"
+	"github.com/mably/btcnet"
+	"github.com/mably/btcutil"
+	"github.com/mably/btcwire"
 	"math/big"
 )
 

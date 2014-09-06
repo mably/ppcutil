@@ -5,12 +5,12 @@
 package ppcutil_test
 
 import (
-	"github.com/conformal/btcdb"
-	"github.com/conformal/btcnet"
+	"github.com/mably/btcdb"
+	"github.com/mably/btcnet"
 	"github.com/mably/ppcutil"
 	"testing"
 
-	_ "github.com/conformal/btcdb/ldb" // init only
+	_ "github.com/mably/btcdb/ldb" // init only
 )
 
 func TestPoWTargetCalculation(t *testing.T) {
