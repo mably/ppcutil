@@ -5,7 +5,7 @@
 package ppcutil
 
 import (
-	"github.com/mably/btcutil"
+	"github.com/conformal/btcutil"
 )
 
 func BlockUnixTime(block *btcutil.Block) int64 {

@@ -5,7 +5,7 @@
 package ppcutil
 
 import (
-	"github.com/mably/btcwire"
+	"github.com/conformal/btcwire"
 )
 
 // https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.h#L962
