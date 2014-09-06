@@ -36,6 +36,10 @@ func GetLastBlockIndex(db btcdb.Db, last *btcutil.Block, proofOfStake bool) (blo
 		if block == nil {
 			break
 		}
+		//TODO dirty workaround, ppcoin doesn't point to genesis block
+		if block.Height()==0{
+			return nil
+		}
 		prevExists, err := db.ExistsSha(&block.MsgBlock().Header.PrevBlock)
 		if err != nil || !prevExists {
 			break
@@ -61,10 +65,6 @@ func GetNextTargetRequired(params btcnet.Params, db btcdb.Db, last *btcutil.Bloc
 	prevPrev := GetLastBlockIndex(db, block, proofOfStake)
 	if prevPrev == nil {
 		return InitialHashTargetBits // second block
-	}
-	//TODO dirty workaround, ppcoin doesn't point to genesis block
-	if prevPrev.Height() == 0 {
-		return InitialHashTargetBits
 	}
 	actualSpacing := prev.MsgBlock().Header.Timestamp.Unix() - prevPrev.MsgBlock().Header.Timestamp.Unix()
 	newTarget := btcchain.CompactToBig(prev.MsgBlock().Header.Bits)

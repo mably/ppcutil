@@ -35,5 +35,8 @@ func TestPoWTargetCalculation(t *testing.T) {
 		}
 		lastBlock = block
 	}
+	if lastBlock.Height() != 511 {
+		t.Error("test ended too early")
+	}
 	return
 }
