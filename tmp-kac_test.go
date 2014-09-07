@@ -40,3 +40,16 @@ func TestPoWTargetCalculation(t *testing.T) {
 	}
 	return
 }
+
+func TestReadCBlockIndex(t *testing.T) {
+	r := ppcutil.ReadCBlockIndex("testdata/blkindex.csv")
+	if r.Height != 0 {
+		t.Errorf("bad root height, have %d, want %d", r.Height, 0)
+	}
+	for r.Next != nil {
+		r = r.Next
+	}
+	if r.Height != 131325 {
+		t.Errorf("bad head height, have %d, want %d", r.Height, 131325)
+	}
+}
