@@ -11,6 +11,15 @@ import (
 	"github.com/mably/btcutil"
 	"github.com/mably/btcwire"
 	"math/big"
+
+	"compress/bzip2"
+	"compress/gzip"
+	"encoding/csv"
+	"encoding/hex"
+	"io"
+	"os"
+	"strconv"
+	"strings"
 )
 
 var (
@@ -37,7 +46,7 @@ func GetLastBlockIndex(db btcdb.Db, last *btcutil.Block, proofOfStake bool) (blo
 			break
 		}
 		//TODO dirty workaround, ppcoin doesn't point to genesis block
-		if block.Height()==0{
+		if block.Height() == 0 {
 			return nil
 		}
 		prevExists, err := db.ExistsSha(&block.MsgBlock().Header.PrevBlock)
@@ -83,4 +92,80 @@ func GetNextTargetRequired(params btcnet.Params, db btcdb.Db, last *btcutil.Bloc
 		newTarget = params.PowLimit
 	}
 	return btcchain.BigToCompact(newTarget)
+}
+
+type CBlkIdx struct {
+	Prev                  *CBlkIdx
+	Next                  *CBlkIdx
+	Height                uint32
+	Mint                  uint64
+	Supply                uint64
+	GeneratedModifier     bool
+	EntropyBit            bool
+	ProofOfStake          bool
+	StakeModifier         []byte
+	StakeModifierChecksum []byte
+	HashProofOfStake      []byte
+	PrevOutHash           []byte
+	PrevOutN              uint32
+	StakeTime             uint32
+	HashMerkleRoot        []byte
+	BlockHash             []byte
+}
+
+func ReadCBlockIndex(blockIndexFile string) (rootIndex *CBlkIdx) {
+
+	fi, _ := os.Open(blockIndexFile)
+	defer fi.Close()
+	var r io.Reader = fi
+
+	if strings.HasSuffix(blockIndexFile, ".bz2") {
+		r = bzip2.NewReader(r)
+	} else if strings.HasSuffix(blockIndexFile, ".gz") {
+		r, _ = gzip.NewReader(r)
+	}
+	ci := csv.NewReader(r)
+	ci.Read() // header
+	var blk, root, prev *CBlkIdx
+	for rec, err := ci.Read(); err == nil; rec, err = ci.Read() {
+		blk = new(CBlkIdx)
+		i, _ := strconv.Atoi(rec[1])
+		blk.Height = uint32(i)
+		i64, _ := strconv.Atoi(rec[2])
+		blk.Mint = uint64(i64)
+		i64, _ = strconv.Atoi(rec[3])
+		blk.Supply = uint64(i64)
+		i, _ = strconv.Atoi(rec[4])
+		blk.GeneratedModifier = i == 1
+		i, _ = strconv.Atoi(rec[5])
+		blk.EntropyBit = i == 1
+		i, _ = strconv.Atoi(rec[6])
+		blk.ProofOfStake = i == 1
+		by, _ := hex.DecodeString(rec[7])
+		blk.StakeModifier = by
+		by, _ = hex.DecodeString(rec[8])
+		blk.StakeModifierChecksum = by
+		by, _ = hex.DecodeString(rec[9])
+		blk.HashProofOfStake = by
+		sa := strings.Split(rec[10], ":")
+		by, _ = hex.DecodeString(sa[0])
+		blk.PrevOutHash = by
+		i, _ = strconv.Atoi(sa[1])
+		blk.PrevOutN = uint32(i)
+		i, _ = strconv.Atoi(rec[11])
+		blk.StakeTime = uint32(i)
+		by, _ = hex.DecodeString(rec[12])
+		blk.HashMerkleRoot = by
+		by, _ = hex.DecodeString(rec[13])
+		blk.BlockHash = by
+
+		if prev == nil {
+			root = blk
+		} else {
+			blk.Prev = prev
+			prev.Next = blk
+		}
+		prev = blk
+	}
+	return root
 }
