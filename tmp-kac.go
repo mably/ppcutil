@@ -111,6 +111,8 @@ type CBlkIdx struct {
 	StakeTime             uint32
 	HashMerkleRoot        []byte
 	BlockHash             []byte
+	BlockTrust            []byte
+	ChainTrust            []byte
 }
 
 func ReadCBlockIndex(blockIndexFile string) (rootIndex *CBlkIdx) {
@@ -158,6 +160,10 @@ func ReadCBlockIndex(blockIndexFile string) (rootIndex *CBlkIdx) {
 		blk.HashMerkleRoot = by
 		by, _ = hex.DecodeString(rec[13])
 		blk.BlockHash = by
+		by, _ = hex.DecodeString(rec[14])
+		blk.BlockTrust = by
+		by, _ = hex.DecodeString(rec[15])
+		blk.ChainTrust = by
 
 		if prev == nil {
 			root = blk
