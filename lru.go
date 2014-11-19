@@ -1,4 +1,4 @@
-// This package provides a simple LRU cache. It is based on the
+// Package ppcutil provides a simple LRU cache. It is based on the
 // LRU implementation in groupcache:
 // https://github.com/golang/groupcache/tree/master/lru
 package ppcutil
@@ -23,7 +23,7 @@ type entry struct {
 	value interface{}
 }
 
-// New creates an LRU cache of the given size
+// NewCache creates an LRU cache of the given size
 func NewCache(size int) (*Cache, error) {
 	if size <= 0 {
 		return nil, errors.New("Must provide a positive size")

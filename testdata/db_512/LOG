@@ -1,9 +1,9 @@
-=============== Sep 6, 2014 (CEST) ===============
-15:59:14.354226 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock D·DeletedEntry L·Level Q·SeqNum T·TimeElapsed
-15:59:14.354587 db@open opening
-15:59:14.354660 journal@recovery F·1
-15:59:14.354955 journal@recovery recovering @33
-15:59:14.355681 db@janitor F·3 G·0
-15:59:14.355709 db@open done T·1.107636ms
-15:59:14.503743 db@close closing
-15:59:14.503836 db@close done T·90.829us
+=============== Nov 19, 2014 (CET) ===============
+16:28:08.257445 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock D·DeletedEntry L·Level Q·SeqNum T·TimeElapsed
+16:28:08.260445 db@open opening
+16:28:08.261445 journal@recovery F·1
+16:28:08.261445 journal@recovery recovering @35
+16:28:08.265445 db@janitor F·3 G·0
+16:28:08.265445 db@open done T·5ms
+16:28:08.341445 db@close closing
+16:28:08.342445 db@close done T·1ms

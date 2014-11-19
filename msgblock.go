@@ -8,6 +8,7 @@ import (
 	"github.com/mably/btcwire"
 )
 
+// IsMsgBlockProofOfStake checks if MsgBlock is of proof of stake type
 // https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.h#L962
 // ppcoin: two types of block: proof-of-work or proof-of-stake
 func IsMsgBlockProofOfStake(msg *btcwire.MsgBlock) bool {

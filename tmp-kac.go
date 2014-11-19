@@ -23,14 +23,14 @@ import (
 )
 
 var (
-	ZeroSha                      = btcwire.ShaHash{}
-	InitialHashTargetBits uint32 = 0x1c00ffff
-	StakeTargetSpacing    int64  = 10 * 60 // 10 minutes
-	TargetSpacingWorkMax  int64  = StakeTargetSpacing * 12
-	TargetTimespan        int64  = 7 * 24 * 60 * 60
+	zeroSha               = btcwire.ShaHash{}
+	initialHashTargetBits = uint32(0x1c00ffff)
+	stakeTargetSpacing    = int64(10 * 60) // 10 minutes
+	targetSpacingWorkMax  = int64(stakeTargetSpacing * 12)
+	targetTimespan        = int64(7 * 24 * 60 * 60)
 )
 
-func MinInt(a int64, b int64) int64 {
+func minInt(a int64, b int64) int64 {
 	if a < b {
 		return a
 	}
@@ -39,7 +39,7 @@ func MinInt(a int64, b int64) int64 {
 
 // https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.cpp#L894
 // ppcoin: find last block index up to pindex
-func GetLastBlockIndex(db btcdb.Db, last *btcutil.Block, proofOfStake bool) (block *btcutil.Block) {
+func getLastBlockIndex(db btcdb.Db, last *btcutil.Block, proofOfStake bool) (block *btcutil.Block) {
 	block = last
 	for true {
 		if block == nil {
@@ -61,29 +61,30 @@ func GetLastBlockIndex(db btcdb.Db, last *btcutil.Block, proofOfStake bool) (blo
 	return block
 }
 
+// GetNextTargetRequired TODO(kac-) golint
 // https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.cpp#L902
 func GetNextTargetRequired(params btcnet.Params, db btcdb.Db, last *btcutil.Block, proofOfStake bool) (compact uint32) {
 	if last == nil {
 		return params.PowLimitBits // genesis block
 	}
-	prev := GetLastBlockIndex(db, last, proofOfStake)
+	prev := getLastBlockIndex(db, last, proofOfStake)
 	if prev == nil {
-		return InitialHashTargetBits // first block
+		return initialHashTargetBits // first block
 	}
 	block, _ := db.FetchBlockBySha(&prev.MsgBlock().Header.PrevBlock)
-	prevPrev := GetLastBlockIndex(db, block, proofOfStake)
+	prevPrev := getLastBlockIndex(db, block, proofOfStake)
 	if prevPrev == nil {
-		return InitialHashTargetBits // second block
+		return initialHashTargetBits // second block
 	}
 	actualSpacing := prev.MsgBlock().Header.Timestamp.Unix() - prevPrev.MsgBlock().Header.Timestamp.Unix()
 	newTarget := btcchain.CompactToBig(prev.MsgBlock().Header.Bits)
 	var targetSpacing int64
 	if proofOfStake {
-		targetSpacing = StakeTargetSpacing
+		targetSpacing = stakeTargetSpacing
 	} else {
-		targetSpacing = MinInt(TargetSpacingWorkMax, StakeTargetSpacing*(1+last.Height()-prev.Height()))
+		targetSpacing = minInt(targetSpacingWorkMax, stakeTargetSpacing*(1+last.Height()-prev.Height()))
 	}
-	interval := TargetTimespan / targetSpacing
+	interval := targetTimespan / targetSpacing
 	tmp := new(big.Int)
 	newTarget.Mul(newTarget,
 		tmp.SetInt64(interval-1).Mul(tmp, big.NewInt(targetSpacing)).Add(tmp, big.NewInt(actualSpacing+actualSpacing)))
@@ -94,6 +95,7 @@ func GetNextTargetRequired(params btcnet.Params, db btcdb.Db, last *btcutil.Bloc
 	return btcchain.BigToCompact(newTarget)
 }
 
+// CBlkIdx TODO(kac-) golint
 type CBlkIdx struct {
 	Prev                  *CBlkIdx
 	Next                  *CBlkIdx
@@ -115,6 +117,7 @@ type CBlkIdx struct {
 	ChainTrust            []byte
 }
 
+// ReadCBlockIndex TODO(kac-) golint
 func ReadCBlockIndex(blockIndexFile string) (rootIndex *CBlkIdx) {
 
 	fi, _ := os.Open(blockIndexFile)

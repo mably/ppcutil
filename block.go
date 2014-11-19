@@ -8,10 +8,12 @@ import (
 	"github.com/mably/btcutil"
 )
 
+// BlockUnixTime gets block timestamp in unix time
 func BlockUnixTime(block *btcutil.Block) int64 {
 	return block.MsgBlock().Header.Timestamp.Unix()
 }
 
+// IsBlockProofOfStake indicates if block is of proof of stake type
 func IsBlockProofOfStake(block *btcutil.Block) bool {
 	return IsMsgBlockProofOfStake(block.MsgBlock())
 }
