@@ -38,7 +38,7 @@ func minInt(a int64, b int64) int64 {
 }
 
 // https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.cpp#L894
-// ppcoin: find last block index up to pindex
+// ppc: find last block index up to pindex
 func getLastBlockIndex(db btcdb.Db, last *btcutil.Block, proofOfStake bool) (block *btcutil.Block) {
 	block = last
 	for true {
