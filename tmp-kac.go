@@ -5,8 +5,8 @@
 package ppcutil
 
 import (
-	"github.com/mably/btcchain"
-	"github.com/mably/btcdb"
+	"github.com/mably/ppcd/blockchain"
+	"github.com/mably/ppcd/database"
 	"github.com/mably/btcnet"
 	"github.com/mably/btcutil"
 	"github.com/mably/btcwire"
@@ -39,7 +39,7 @@ func minInt(a int64, b int64) int64 {
 
 // https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.cpp#L894
 // ppc: find last block index up to pindex
-func getLastBlockIndex(db btcdb.Db, last *btcutil.Block, proofOfStake bool) (block *btcutil.Block) {
+func getLastBlockIndex(db database.Db, last *btcutil.Block, proofOfStake bool) (block *btcutil.Block) {
 	block = last
 	for true {
 		if block == nil {
@@ -63,7 +63,7 @@ func getLastBlockIndex(db btcdb.Db, last *btcutil.Block, proofOfStake bool) (blo
 
 // GetNextTargetRequired TODO(kac-) golint
 // https://github.com/ppcoin/ppcoin/blob/v0.4.0ppc/src/main.cpp#L902
-func GetNextTargetRequired(params btcnet.Params, db btcdb.Db, last *btcutil.Block, proofOfStake bool) (compact uint32) {
+func GetNextTargetRequired(params btcnet.Params, db database.Db, last *btcutil.Block, proofOfStake bool) (compact uint32) {
 	if last == nil {
 		return params.PowLimitBits // genesis block
 	}
@@ -77,7 +77,7 @@ func GetNextTargetRequired(params btcnet.Params, db btcdb.Db, last *btcutil.Bloc
 		return initialHashTargetBits // second block
 	}
 	actualSpacing := prev.MsgBlock().Header.Timestamp.Unix() - prevPrev.MsgBlock().Header.Timestamp.Unix()
-	newTarget := btcchain.CompactToBig(prev.MsgBlock().Header.Bits)
+	newTarget := blockchain.CompactToBig(prev.MsgBlock().Header.Bits)
 	var targetSpacing int64
 	if proofOfStake {
 		targetSpacing = stakeTargetSpacing
@@ -92,7 +92,7 @@ func GetNextTargetRequired(params btcnet.Params, db btcdb.Db, last *btcutil.Bloc
 	if newTarget.Cmp(params.PowLimit) > 0 {
 		newTarget = params.PowLimit
 	}
-	return btcchain.BigToCompact(newTarget)
+	return blockchain.BigToCompact(newTarget)
 }
 
 // CBlkIdx TODO(kac-) golint

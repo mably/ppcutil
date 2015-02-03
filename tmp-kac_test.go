@@ -5,17 +5,16 @@
 package ppcutil_test
 
 import (
-	"github.com/mably/btcdb"
 	"github.com/mably/btcnet"
+	"github.com/mably/ppcd/database"
+	_ "github.com/mably/ppcd/database/ldb" // init only
 	"github.com/mably/ppcutil"
 	"testing"
-
-	_ "github.com/mably/btcdb/ldb" // init only
 )
 
 func TestPoWTargetCalculation(t *testing.T) {
 	params := btcnet.MainNetParams
-	db, err := btcdb.OpenDB("leveldb", "testdata/db_512")
+	db, err := database.OpenDB("leveldb", "testdata/db_512")
 	if err != nil {
 		t.Errorf("db error %v", err)
 		return
