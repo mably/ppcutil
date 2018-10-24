@@ -7,7 +7,7 @@ install:
   - ./.travis/get_ci_vet.sh
   - ./.travis/get_ci_cover.sh  
   - go get -v github.com/GeertJohan/fgt
-  - go get -v github.com/golang/lint/golint
+  - go get -v golang.org/x/lint/golint
 script:
   - export PATH=$PATH:$HOME/gopath/bin
   - go vet
